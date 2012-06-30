@@ -1,0 +1,17 @@
+%html
+  %head
+    %title= "Rubik's Patterns"
+    %script{type: 'text/javascript', src: '/javascripts/jquery.min.js'}
+    %script{type: 'text/javascript', src: '/javascripts/bootstrap.min.js'}
+    %script{type: 'text/javascript', src: '/javascripts/underscore-min.js'}
+    %script{type: 'text/javascript', src: 'http://yui.yahooapis.com/3.4.1/build/yui/yui-min.js'}
+    %script{type: 'text/javascript', src: '/javascripts/rubik.js'}
+    %script{type: 'text/javascript', src: '/javascripts/app.js'}
+    %link{rel: 'stylesheet', type: "text/css", href: '/stylesheets/styles.css'}
+    %link{rel: 'stylesheet', type: "text/css", href: '/stylesheets/rubik.css'}
+    %link{rel: 'stylesheet', type: "text/css", href: '/stylesheets/bootstrap.min.css'}
+    %link{rel: 'stylesheet', type: "text/css", href: '/stylesheets/bootstrap-responsive.min.css'}
+  %body.app-content
+    .container-fluid
+      .span12
+        = yield
