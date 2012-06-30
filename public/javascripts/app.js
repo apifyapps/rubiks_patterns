@@ -1,4 +1,4 @@
-var patternsUrl = "http://apify.heroku.com/api/rubiks_cube_patterns.json?callback=?";
+var patternsUrl = "http://apify.heroku.com/api/rubiks_patterns.json?callback=?";
 var moveMap = {
   "F": "FS",
   "B": "BS",
@@ -7,24 +7,15 @@ var moveMap = {
   "U": "UE",
   "D": "DE"
 };
-var patterns = [
-  {
-    name: "Pons asinorium",
-    moves: "F F B B R R L L U U D D"
-  },
-  {
-    name: "Checkerboards of order 3",
-    moves: "F B B R R R D D B R U D D D R L L L D D D F F F R R D F F B B B"
-  },
-];
+var patterns = [];
 var currentMoveIndex = 0;
 var currentMoves = [];
 
 $(function(){
-  // $.getJSON(patternsUrl, function(dataString){
-  //   patterns = JSON.parse(dataString);
-  // });
-  fillPatterns();
+  $.getJSON(patternsUrl, function(dataString){
+    patterns = JSON.parse(dataString);
+    fillPatterns();
+  });
 
   function fillPatterns(){
     $('#patternName').html('');
@@ -73,7 +64,13 @@ $(function(){
 });
 
 function move(value){
+  var direction = 'right';
+  if(typeof(value[1]) != 'undefined'){
+    direction = 'left';
+    value = value[0];
+  }
+  console.log(direction);
   var moveSlice = moveMap[value].split('');
   cube._expectingTransition = true;
-  cube._doMovement({face: moveSlice[0], slice: moveSlice[1], rotate: 'right'});
+  cube._doMovement({face: moveSlice[0], slice: moveSlice[1], rotate: direction});
 }
