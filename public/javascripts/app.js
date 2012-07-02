@@ -1,4 +1,4 @@
-var patternsUrl = "http://apify.heroku.com/api/rubiks_patterns.json?callback=?";
+var patternsUrl = "http://apify.heroku.com/api/rubiks_cube_patterns.json?callback=?";
 var moveMap = {
   "F": "FS",
   "B": "BS",
@@ -8,20 +8,27 @@ var moveMap = {
   "D": "DE"
 };
 var patterns = [];
+var moves = [];
 var currentMoveIndex = 0;
 var currentMoves = [];
 
 $(function(){
   $.getJSON(patternsUrl, function(dataString){
-    patterns = JSON.parse(dataString);
+    var patternNamesAndMoves = JSON.parse(dataString);
+    patterns = _.map(_.filter(patternNamesAndMoves, function(e,i){return (i%2 == 0);}), function(obj){return obj.pattern});
+    moves = _.map(_.filter(patternNamesAndMoves, function(e,i){return (i%2 != 0);}), function(obj){
+      return obj.pattern.replace(/\n\s+/,' ')
+        .replace(/(.)2/g,'$1 $1')
+        .split(/\s+/);
+    });
     fillPatterns();
   });
 
   function fillPatterns(){
     $('#patternName').html('');
     $('#patternName').append('<option>Select Pattern</option>');
-    _.each(patterns, function(pattern){
-      $('#patternName').append('<option>' + pattern.name + '</option>');
+    _.each(patterns, function(pattern, index){
+      $('#patternName').append('<option value="'+index+'">' + pattern + '</option>');
     });
   }
 
@@ -30,10 +37,10 @@ $(function(){
   });
 
   $('#patternName').change(function(){
-    var patternName = $(this).val();
-    var pattern = _.find(patterns, function(pattern){ return pattern.name == patternName});
+    var index = $(this).val();
+    var pattern = patterns[index];
     currentMoveIndex = 0;
-    currentMoves = pattern.moves.split(' ');
+    currentMoves = moves[index];
     displayCurrentMoves();
   });
 
@@ -66,11 +73,12 @@ $(function(){
 function move(value){
   var direction = 'right';
   if(typeof(value[1]) != 'undefined'){
-    direction = 'left';
+    if(value[1] == "'"){
+      direction = 'left';
+    }
     value = value[0];
   }
-  console.log(direction);
   var moveSlice = moveMap[value].split('');
   cube._expectingTransition = true;
-  cube._doMovement({face: moveSlice[0], slice: moveSlice[1], rotate: direction});
+  cube._doMovement({face: moveSlice[0], slice: moveSlice[1], rotate: direction}, false);
 }
